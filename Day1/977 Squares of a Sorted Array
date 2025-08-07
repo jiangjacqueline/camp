@@ -1,0 +1,39 @@
+// LeetCode 977 Squares of a Sorted Array
+// Link: https://leetcode.com/problems/squares-of-a-sorted-array/description/
+
+Version1:
+
+class Solution {
+    public int[] sortedSquares(int[] nums) {
+        int[] ans = new int[nums.length];
+        for(int i = 0; i < nums.length; i++){
+            ans[i] = nums[i] * nums[i];
+        }
+        Arrays.sort(ans);
+        return ans;
+    }
+}
+
+
+Version 2:
+```java
+class Solution {
+    public int[] sortedSquares(int[] nums) {
+        if(nums == null || nums.length == 0){
+            return new int[] {-1, -1};
+        }
+
+        int left = 0, right = nums.length - 1;
+        int[] ans = new int[nums.length];
+        int index = ans.length - 1;
+
+        while(left <= right){
+            if(nums[left] * nums[left] > nums[right] * nums[right]){
+                ans[index--] = nums[left] * nums[left++];
+            }else{
+                ans[index--] = nums[right] * nums[right--];
+            }
+        }
+        return ans;
+    }
+}
