@@ -1,0 +1,28 @@
+454. 4Sum II
+Link: https://leetcode.com/problems/4sum-ii/
+
+class Solution {
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for(int a : nums1){
+            for(int b : nums2){
+                int sum = a + b;
+                map.put(sum, map.getOrDefault(sum, 0) + 1);
+            }
+        }
+
+        // check if the opposite value exists in the map
+        int count = 0;
+        for(int c : nums3){
+            for(int d : nums4){
+                int sum = c + d;
+                int target = -sum;
+                if(map.containsKey(target)){
+                    count += map.get(target); // add the number of pairs that match
+                }
+            }
+        }
+        return count;
+    }
+}
