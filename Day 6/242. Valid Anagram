@@ -1,0 +1,26 @@
+242. Valid Anagram
+Link: https://leetcode.com/problems/valid-anagram/description/
+
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // If the two strings have different lengths, they cannot be anagrams return false
+        if(s.length() != t.length()){
+            return false;
+        }
+
+        // Use a HashMap<Character, Integer> to store the frequency count of each character in the first string s
+        Map<Character, Integer> map = new HashMap<>();
+        for(int i = 0; i < s.length(); i++){
+            int count = map.getOrDefault(s.charAt(i), 0);
+            map.put(s.charAt(i), ++count);
+        }
+        // Loop through the second string t, decrement the count for each character.
+        for(int j = 0; j < t.length(); j++){
+            int count = map.getOrDefault(t.charAt(j), 0);
+            map.put(t.charAt(j), --count);
+            // If any count becomes negative, it means t has more occurrences of that character than s return false.
+            if(count < 0) return false;
+        }
+        return true;
+    }
+}
