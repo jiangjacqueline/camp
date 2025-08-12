@@ -1,0 +1,28 @@
+202. Happy Number
+Link: https://leetcode.com/problems/happy-number/
+
+class Solution {
+    public boolean isHappy(int n) {
+        HashSet<Integer> hash = new HashSet<>();
+
+        while(n != 1){
+            if(hash.contains(n)){
+                return false;
+            }
+            hash.add(n);
+            n = getNext(n);
+        }
+        return true;
+    }
+
+    private int getNext(int n){
+        int sum = 0;
+        while(n > 0){
+            int digit = n % 10; // get last digit
+            sum += digit * digit; // add its square
+            n /= 10; // remove last digit
+        }
+        return sum;
+    }
+
+}
