@@ -1,0 +1,28 @@
+459. Repeated Substring Pattern
+Link: https://leetcode.com/problems/repeated-substring-pattern/
+
+class Solution {
+    public boolean repeatedSubstringPattern(String s) {
+        int l = s.length();
+        int[] next = new int[l]; // next[i] stores the length of the longest proper prefix which is also a suffix for s[0..i]
+        next[0] = -1;
+        int i, j = -1;
+        for(i = 1; i < l; i++){
+            while(j >= 0 && s.charAt(i) != s.charAt(j + 1)){
+                j = next[j];
+            }
+            if(s.charAt(i) == s.charAt(j + 1)){
+                j++;
+            }
+            next[i] = j;
+        }
+/**
+ * lenSub = length of the possible repeating substring.
+ * Calculation: l - 1 - next[l-1] gives the length of the smallest repeating unit.
+ * lenSub != l → ensures the substring is smaller than the original string.
+ * l % lenSub == 0 → ensures the string length is a multiple of the substring length.
+ */
+        int lenSub = l - 1 - next[l - 1];
+        return lenSub != l && l % lenSub == 0;
+    }
+}
