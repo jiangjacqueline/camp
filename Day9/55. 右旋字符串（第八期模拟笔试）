@@ -16,3 +16,38 @@ fgabcde
 
 Link: https://kamacoder.com/problempage.php?pid=1065
 
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int k = Integer.parseInt(sc.nextLine());
+        String str = sc.nextLine();
+        sc.close();
+
+        char[] arr = str.toCharArray();
+        int n = arr.length;
+        k = k % n; // handle k > n
+
+        // Step 1: reverse the whole array
+        reverse(arr, 0, n - 1);
+
+        // Step 2: reverse the first k characters
+        reverse(arr, 0, k - 1);
+
+        // Step 3: reverse the remaining characters
+        reverse(arr, k, n - 1);
+
+        System.out.println(new String(arr));
+    }
+
+    public static void reverse(char[] str, int start, int end) {
+        if (str == null || str.length <= 1) return;
+
+        for (int i = 0; i < (end - start + 1) / 2; i++) {
+            char t = str[start + i];
+            str[start + i] = str[end - i];
+            str[end - i] = t;
+        }
+    }
+}
