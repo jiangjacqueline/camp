@@ -1,0 +1,18 @@
+1047. Remove All Adjacent Duplicates In String
+Link: https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/description/
+
+class Solution {
+    public String removeDuplicates(String s) {
+        StringBuilder sb = new StringBuilder();
+        
+        for(char c : s.toCharArray()){
+            int len = sb.length();
+            if(len > 0 && sb.charAt(len - 1) == c){
+                sb.deleteCharAt(len - 1);// Remove the last char if it's the same
+            }else{
+                sb.append(c);// Otherwise, add it
+            }
+        }
+        return sb.toString();
+    }
+}
