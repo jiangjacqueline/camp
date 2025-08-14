@@ -1,0 +1,51 @@
+225. Implement Stack using Queues
+Link: https://leetcode.com/problems/implement-stack-using-queues/description/
+
+class MyStack {
+    private Queue<Integer> queue;
+
+    public MyStack() {
+        queue = new LinkedList<>();
+    }
+    
+    public void push(int x) {
+        queue.add(x);
+    }
+    
+    // Removes the element on top of the stack and returns it
+    public int pop() {
+        rePosition();
+        return queue.poll();
+    }
+    
+    // Get the top element
+    public int top() {
+        rePosition();
+        int result = queue.poll();
+        queue.add(result);
+        return result;
+    }
+    
+    public boolean empty() {
+        return queue.isEmpty();
+    }
+
+    private void rePosition(){
+        int size = queue.size();
+        // Move the first (size - 1) elements to the back
+        for (int i = 0; i < size - 1; i++) {
+            queue.offer(queue.poll());
+        }
+    }
+}
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack obj = new MyStack();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ * int param_3 = obj.top();
+ * boolean param_4 = obj.empty();
+ */
+
+
