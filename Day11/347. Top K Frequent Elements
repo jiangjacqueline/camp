@@ -1,0 +1,34 @@
+347. Top K Frequent Elements
+Link: https://leetcode.com/problems/top-k-frequent-elements/description/
+
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        // Step 1: Count frequencies
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        for (int num : nums) {
+            freqMap.put(num, freqMap.getOrDefault(num, 0) + 1);
+        }
+
+        // Step 2: Min-heap to keep top k frequent elements
+        PriorityQueue<Map.Entry<Integer, Integer>> minHeap = new PriorityQueue<>(
+            (a, b) -> a.getValue() - b.getValue()
+        );
+
+        for (Map.Entry<Integer, Integer> entry : freqMap.entrySet()) {
+            if (minHeap.size() < k) {
+                minHeap.offer(entry);
+            } else if (entry.getValue() > minHeap.peek().getValue()) {
+                minHeap.poll();
+                minHeap.offer(entry);
+            }
+        }
+
+        // Step 3: Extract results from the heap
+        int[] res = new int[k];
+        int index = 0;
+        while (!minHeap.isEmpty()) {
+            res[index++] = minHeap.poll().getKey();
+        }
+        return res;
+    }
+}
