@@ -1,0 +1,28 @@
+150. Evaluate Reverse Polish Notation
+Link: https://leetcode.com/problems/evaluate-reverse-polish-notation/description/
+
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> s = new Stack<Integer>();
+        String operations = "+-*/";
+        for(String token : tokens){
+            if(!operations.contains(token)){
+                s.push(Integer.valueOf(token));
+                continue;
+            }
+
+            int a = s.pop();
+            int b = s.pop();
+            if(token.equals("+")){
+                s.push(b + a);
+            }else if(token.equals("-")){
+                s.push(b - a);
+            }else if(token.equals("*")){
+                s.push(b * a);
+            }else{
+                s.push( b / a);
+            }
+        }
+        return s.pop();
+    }
+}
