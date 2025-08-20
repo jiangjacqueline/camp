@@ -1,0 +1,51 @@
+106. Construct Binary Tree from Inorder and Postorder Traversal
+Link: https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private Map<Integer, Integer> inorderIndexMap;
+
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        // build a map for fast index lookup in inorder array
+        inorderIndexMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            inorderIndexMap.put(inorder[i], i);
+        }
+
+        return build(postorder, 0, postorder.length - 1, 0, inorder.length - 1);
+    }
+
+    private TreeNode build(int[] postorder, int postStart, int postEnd, 
+                           int inStart, int inEnd) {
+        if (postStart > postEnd || inStart > inEnd) return null;
+
+        int rootVal = postorder[postEnd]; // root is last element in postorder
+        TreeNode root = new TreeNode(rootVal);
+
+        int inRootIndex = inorderIndexMap.get(rootVal);
+        int leftTreeSize = inRootIndex - inStart;
+
+        // build left subtree
+        root.left = build(postorder, postStart, postStart + leftTreeSize - 1, 
+                          inStart, inRootIndex - 1);
+        // build right subtree
+        root.right = build(postorder, postStart + leftTreeSize, postEnd - 1, 
+                           inRootIndex + 1, inEnd);
+
+        return root;
+    }
+}
