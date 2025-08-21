@@ -1,0 +1,46 @@
+654. Maximum Binary Tree
+Link: https://leetcode.com/problems/maximum-binary-tree/description/
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        return build(nums, 0, nums.length);
+    }
+
+    private TreeNode build(int[] nums, int left, int right) {
+        if (left >= right) {
+            return null;
+        }
+
+        // Find index of maximum value
+        int maxIndex = left;
+        for (int i = left + 1; i < right; i++) {
+            if (nums[i] > nums[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+
+        // Create root node with maximum value
+        TreeNode root = new TreeNode(nums[maxIndex]);
+
+        // Recursively build left and right subtrees
+        root.left = build(nums, left, maxIndex);        // [left, maxIndex)
+        root.right = build(nums, maxIndex + 1, right);  // [maxIndex+1, right)
+
+        return root;
+    }
+}
