@@ -1,0 +1,38 @@
+93. Restore IP Addresses
+Link: https://leetcode.com/problems/restore-ip-addresses/description/
+
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<>();
+        if(s == null || s.length() < 4 || s.length() > 12) return result;
+        backtrack(s, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void backtrack(String s, int start, List<String> current, List<String> result){
+        // If we already have 4 parts
+        if(current.size() == 4){
+            if(start == s.length()){
+                result.add(String.join(".", current));
+            }
+            return;
+        }
+        // Try to form a part of length 1 to 3
+        for(int end = start; end < s.length() && end < start + 3; end++){
+            String part = s.substring(start, end + 1);
+            if(isValidPart(part)){
+                current.add(part);
+                backtrack(s, end + 1, current, result);
+                current.remove(current.size() - 1);
+            }
+        }
+    }
+
+    private boolean isValidPart(String s){
+        // "0", "10", "255" valid
+        // "00", "256", "1234" invalid
+        if (s.length() > 1 && s.charAt(0) == '0') return false;
+        int val = Integer.parseInt(s);
+        return val >= 0 && val <= 255;
+    }
+}
