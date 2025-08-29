@@ -1,0 +1,47 @@
+37. Sudoku Solver
+Link: https://leetcode.com/problems/sudoku-solver/description/
+
+class Solution {
+    public void solveSudoku(char[][] board) {
+        backtrack(board);
+    }
+
+    private boolean backtrack(char[][] board) {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (board[row][col] == '.') {
+                    // try all digits 1–9
+                    for (char c = '1'; c <= '9'; c++) {
+                        if (isValid(board, row, col, c)) {
+                            board[row][col] = c;
+                            if (backtrack(board)) return true;
+                            board[row][col] = '.'; // undo move
+                        }
+                    }
+                    return false; // no valid number found, backtrack
+                }
+            }
+        }
+        return true; // filled the whole board
+    }
+
+    private boolean isValid(char[][] board, int row, int col, char c) {
+        // check row and column
+        for (int i = 0; i < 9; i++) {
+            if (board[row][i] == c) return false; // same row
+            if (board[i][col] == c) return false; // same column
+        }
+
+        // check 3x3 sub-box
+        int boxRowStart = (row / 3) * 3;
+        int boxColStart = (col / 3) * 3;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[boxRowStart + i][boxColStart + j] == c) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
