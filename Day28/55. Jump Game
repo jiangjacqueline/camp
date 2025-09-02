@@ -1,0 +1,19 @@
+55. Jump Game
+Link: https://leetcode.com/problems/jump-game/description/
+
+class Solution {
+    public boolean canJump(int[] nums) {
+        if(nums == null || nums.length == 0){
+            return false;
+        }
+
+        int maxJump = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(i > maxJump){
+                return false;
+            }
+            maxJump = Math.max(maxJump, i + nums[i]);
+        }
+        return true;
+    }
+}
