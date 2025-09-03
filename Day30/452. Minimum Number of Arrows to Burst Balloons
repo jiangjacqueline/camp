@@ -1,0 +1,24 @@
+452. Minimum Number of Arrows to Burst Balloons
+Link: https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/description/
+
+class Solution {
+    public int findMinArrowShots(int[][] points) {
+        if (points == null || points.length == 0) return 0;
+
+        // Step 1: sort by end coordinate
+        Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1]));
+
+        int arrows = 1;             // shoot first arrow
+        int end = points[0][1];     // current arrow at end of first balloon
+
+        for (int i = 1; i < points.length; i++) {
+            if (points[i][0] > end) {   // balloon not covered
+                arrows++;
+                end = points[i][1];     // shoot new arrow
+            }
+            // else: balloon is covered, do nothing
+        }
+
+        return arrows;
+    }
+}
