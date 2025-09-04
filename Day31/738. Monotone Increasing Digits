@@ -1,0 +1,24 @@
+738. Monotone Increasing Digits
+Link: https://leetcode.com/problems/monotone-increasing-digits/description/
+
+class Solution {
+    public int monotoneIncreasingDigits(int n) {
+        char[] digits = Integer.toString(n).toCharArray();
+
+        int marker = digits.length;
+        // traverse from right to left
+        for(int i = digits.length - 1; i > 0; i--){
+            if(digits[i - 1] > digits[i]){
+                digits[i - 1]--;
+                marker = i; // mark where to set 9s
+            }
+        }
+
+        // fill all digits after marker with '9'
+        for(int i = marker; i < digits.length; i++){
+            digits[i] = '9';
+        }
+
+        return Integer.parseInt(new String(digits));
+    }
+}
