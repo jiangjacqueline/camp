@@ -1,0 +1,20 @@
+739. Daily Temperatures
+Link: https://leetcode.com/problems/daily-temperatures/
+
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] result = new int[n];
+        Deque<Integer> stack = new ArrayDeque<>(); // stores indices, monotonic decreasing stack
+
+        for(int i = 0; i < n; i++){
+            // while current temperature is greater than  the temperature at stack top
+            while(!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]){
+                int prevIndex = stack.pop();
+                result[prevIndex] = i - prevIndex; // number of days waited
+            }
+            stack.push(i); // push current day's index
+        }
+        return result;
+    }
+}
