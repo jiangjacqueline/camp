@@ -1,0 +1,74 @@
+695. Max Area of Island
+Link: https://leetcode.com/problems/max-area-of-island/description/
+
+// DFS
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        int maxArea = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    maxArea = Math.max(maxArea, dfs(grid, i, j));
+                }
+            }
+        }
+        return maxArea;
+    }
+
+    private int dfs(int[][] grid, int x, int y) {
+        int n = grid.length, m = grid[0].length;
+
+        // out of bounds or water → stop
+        if (x < 0 || x >= n || y < 0 || y >= m || grid[x][y] == 0) {
+            return 0;
+        }
+
+        grid[x][y] = 0; // mark as visited
+        int area = 1;   // count current cell
+
+        // explore 4 directions
+        area += dfs(grid, x + 1, y);
+        area += dfs(grid, x - 1, y);
+        area += dfs(grid, x, y + 1);
+        area += dfs(grid, x, y - 1);
+
+        return area;
+    }
+}
+
+// BFS
+class Solution {
+    public int maxAreaOfIsland(int[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        int maxArea = 0;
+
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    int area = 0;
+                    Queue<int[]> q = new LinkedList<>();
+                    q.offer(new int[]{i, j});
+                    grid[i][j] = 0; // mark visited
+
+                    while (!q.isEmpty()) {
+                        int[] cur = q.poll();
+                        area++;
+                        for (int[] d : dirs) {
+                            int x = cur[0] + d[0], y = cur[1] + d[1];
+                            if (x >= 0 && x < n && y >= 0 && y < m && grid[x][y] == 1) {
+                                q.offer(new int[]{x, y});
+                                grid[x][y] = 0;
+                            }
+                        }
+                    }
+                    maxArea = Math.max(maxArea, area);
+                }
+            }
+        }
+        return maxArea;
+    }
+}
