@@ -1,0 +1,42 @@
+并查集理论基础
+https://www.programmercarl.com/kamacoder/%E5%9B%BE%E8%AE%BA%E5%B9%B6%E6%9F%A5%E9%9B%86%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80.html#%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA
+
+public class UnionFind {
+    private int[] father;
+    private int n;
+
+    // 构造函数，传入节点数量 n
+    public UnionFind(int n) {
+        this.n = n;
+        father = new int[n];
+        init();
+    }
+
+    // 初始化，每个节点的父节点指向自己
+    private void init() {
+        for (int i = 0; i < n; i++) {
+            father[i] = i;
+        }
+    }
+
+    // 寻根 + 路径压缩
+    public int find(int u) {
+        if (u != father[u]) {
+            father[u] = find(father[u]); // 路径压缩
+        }
+        return father[u];
+    }
+
+    // 判断两个节点是否属于同一集合
+    public boolean isSame(int u, int v) {
+        return find(u) == find(v);
+    }
+
+    // 合并两个节点所在的集合
+    public void join(int u, int v) {
+        u = find(u);
+        v = find(v);
+        if (u == v) return; // 已经在一个集合中
+        father[v] = u; // 或者 father[u] = v，也可以用按秩合并优化
+    }
+}
