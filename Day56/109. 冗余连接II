@@ -1,0 +1,171 @@
+109. 冗余连接II
+题目描述
+
+有一种有向树,该树只有一个根节点，所有其他节点都是该根节点的后继。该树除了根节点之外的每一个节点都有且只有一个父节点，而根节点没有父节点。有向树拥有 n 个节点和 n - 1 条边。如图：
+4 ←-- 1
+↓
+2
+↓
+3 --→ 5
+
+现在有一个有向图，有向图是在有向树中的两个没有直接链接的节点中间添加一条有向边。如图：
+4 ←- 1
+↓
+2
+↓ ↘
+3 -→ 5
+
+输入一个有向图，该图由一个有着 n 个节点(节点编号 从 1 到 n)，n 条边，请返回一条可以删除的边，使得删除该条边之后该有向图可以被当作一颗有向树。
+
+输入描述
+
+第一行输入一个整数 N，表示有向图中节点和边的个数。
+
+后续 N 行，每行输入两个整数 s 和 t，代表这是 s 节点连接并指向 t 节点的单向边
+
+输出描述
+
+输出一条可以删除的边，若有多条边可以删除，请输出标准输入中最后出现的一条边。
+
+输入示例
+
+3
+1 2
+1 3
+2 3
+输出示例
+
+2 3
+
+提示信息
+
+1 → 2
+↓ ↙
+3
+
+在删除 2 3 后有向图可以变为一棵合法的有向树，所以输出 2 3
+
+数据范围：
+
+1 <= N <= 1000.
+
+import java.util.*;
+
+/* 
+ * 冗余连接II。主要问题是存在入度为2或者成环，也可能两个问题同时存在。
+ * 1.判断入度为2的边 
+ * 2.判断是否成环（并查集）
+ */
+ 
+public class Main {
+    /**
+     * 并查集模板
+     */
+    static class Disjoint {
+
+        private final int[] father;
+
+        public Disjoint(int n) {
+            father = new int[n];
+            for (int i = 0; i < n; i++) {
+                father[i] = i;
+            }
+        }
+
+        public void join(int n, int m) {
+            n = find(n);
+            m = find(m);
+            if (n == m) return;
+            father[n] = m;
+        }
+
+        public int find(int n) {
+            return father[n] == n ? n : (father[n] = find(father[n]));
+        }
+
+        public boolean isSame(int n, int m) {
+            return find(n) == find(m);
+        }
+    }
+
+    static class Edge {
+        int s;
+        int t;
+
+        public Edge(int s, int t) {
+            this.s = s;
+            this.t = t;
+        }
+    }
+
+    static class Node {
+        int id;
+        int in;
+        int out;
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        List<Edge> edges = new ArrayList<>();
+        Node[] nodeMap = new Node[n + 1];
+        for (int i = 1; i <= n; i++) {
+            nodeMap[i] = new Node();
+        }
+        Integer doubleIn = null;
+        for (int i = 0; i < n; i++) {
+            int s = scanner.nextInt();
+            int t = scanner.nextInt();
+            //记录入度
+            nodeMap[t].in++;
+            if (!(nodeMap[t].in < 2)) doubleIn = t;
+            Edge edge = new Edge(s, t);
+            edges.add(edge);
+        }
+        Edge result = null;
+        //存在入度为2的节点，既要消除入度为2的问题同时解除可能存在的环
+        if (doubleIn != null) {
+            List<Edge> doubleInEdges = new ArrayList<>();
+            for (Edge edge : edges) {
+                if (edge.t == doubleIn) doubleInEdges.add(edge);
+                if (doubleInEdges.size() == 2) break;
+            }
+            Edge edge = doubleInEdges.get(1);
+            if (isTreeWithExclude(edges, edge, nodeMap)) {
+                result = edge;
+            } else {
+                result = doubleInEdges.get(0);
+            }
+        } else {
+            //不存在入度为2的节点,则只需要解除环即可
+            result = getRemoveEdge(edges, nodeMap);
+        }
+
+        System.out.println(result.s + " " + result.t);
+    }
+
+    public static boolean isTreeWithExclude(List<Edge> edges, Edge exculdEdge, Node[] nodeMap) {
+        Disjoint disjoint = new Disjoint(nodeMap.length + 1);
+        for (Edge edge : edges) {
+            if (edge == exculdEdge) continue;
+            //成环则不是树
+            if (disjoint.isSame(edge.s, edge.t)) {
+                return false;
+            }
+            disjoint.join(edge.s, edge.t);
+        }
+        return true;
+    }
+
+    public static Edge getRemoveEdge(List<Edge> edges, Node[] nodeMap) {
+        int length = nodeMap.length;
+        Disjoint disjoint = new Disjoint(length);
+
+        for (Edge edge : edges) {
+            if (disjoint.isSame(edge.s, edge.t)) return edge;
+            disjoint.join(edge.s, edge.t);
+        }
+        return null;
+    }
+
+}
