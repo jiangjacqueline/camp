@@ -1,0 +1,145 @@
+1135. Connecting Cities With Minimum Cost
+
+You have n cities, numbered from 1 to n. You are given an array connections, where each connections[i] = [xi, yi, costi] represents a bidirectional connection (an undirected edge) between city xi and city yi with cost costi.
+
+Your goal is to connect all n cities such that there is a path between every pair of cities (i.e. the graph is fully connected). Return the minimum total cost to make that possible. If it's impossible to connect all the cities, return -1.
+
+The total cost is simply the sum of the costs of the connections you choose to include.
+
+Example 1
+Input:
+n = 3  
+connections = [[1,2,5], [1,3,6], [2,3,1]]
+
+Output: 6
+
+Explanation:
+We can connect city 1–2 with cost 5, and city 2–3 with cost 1, for a total cost of 6. 
+That connects all 3 cities (1 → 2 → 3).  
+We don’t need the connection [1,3] with cost 6 because it would be redundant.
+
+Example 2
+Input:
+n = 4  
+connections = [[1,2,3], [3,4,4]]
+
+Output: -1
+
+Explanation:
+We can connect 1–2, and 3–4, but there is no way to connect the component {1,2} with {3,4}. 
+Therefore it’s impossible to connect all 4 cities, so we return -1.
+
+Constraints
+
+1 <= n <= 10^4
+
+1 <= connections.length <= 10^4
+
+connections[i].length == 3
+
+1 <= xi, yi <= n
+
+xi != yi
+
+0 <= costi <= 10^5
+
+Prim’s Algorithm
+import java.util.*;
+
+class Solution {
+    public int minimumCost(int n, int[][] connections) {
+        // Adjacency matrix initialization
+        int[][] grid = new int[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(grid[i], 10001); // large value = no direct edge
+        }
+
+        // Fill adjacency matrix with edge weights
+        for (int[] edge : connections) {
+            int x = edge[0];
+            int y = edge[1];
+            int cost = edge[2];
+            grid[x][y] = Math.min(grid[x][y], cost); // in case of multiple edges
+            grid[y][x] = Math.min(grid[y][x], cost);
+        }
+
+        // Distance array (min cost to connect each city to MST)
+        int[] minDist = new int[n + 1];
+        Arrays.fill(minDist, 10001);
+        minDist[1] = 0; // start from city 1
+
+        boolean[] isInTree = new boolean[n + 1];
+        int result = 0;
+
+        // Prim’s algorithm main loop
+        for (int i = 1; i <= n; i++) {
+            int cur = -1;
+            int minVal = Integer.MAX_VALUE;
+
+            // Find the node with the smallest edge not in MST
+            for (int j = 1; j <= n; j++) {
+                if (!isInTree[j] && minDist[j] < minVal) {
+                    minVal = minDist[j];
+                    cur = j;
+                }
+            }
+
+            // If we can’t find any node, graph is disconnected
+            if (cur == -1) return -1;
+
+            isInTree[cur] = true;
+            result += minDist[cur];
+
+            // Update the min distances for the rest of nodes
+            for (int j = 1; j <= n; j++) {
+                if (!isInTree[j] && grid[cur][j] < minDist[j]) {
+                    minDist[j] = grid[cur][j];
+                }
+            }
+        }
+
+        return result;
+    }
+}
+
+
+
+Kruskal’s Algorithm
+import java.util.*;
+
+class Solution {
+    public int minimumCost(int n, int[][] connections) {
+        // Sort all edges by cost (ascending)
+        Arrays.sort(connections, (a, b) -> a[2] - b[2]);
+
+        // Initialize Union-Find
+        int[] parent = new int[n + 1];
+        for (int i = 1; i <= n; i++) parent[i] = i;
+
+        int result = 0;
+        int count = 0; // number of edges added to MST
+
+        for (int[] edge : connections) {
+            int a = edge[0], b = edge[1], cost = edge[2];
+            if (find(parent, a) != find(parent, b)) {
+                union(parent, a, b);
+                result += cost;
+                count++;
+            }
+        }
+
+        // If MST includes all n cities, return cost; else return -1
+        return count == n - 1 ? result : -1;
+    }
+
+    private int find(int[] parent, int x) {
+        if (parent[x] != x) parent[x] = find(parent, parent[x]); // path compression
+        return parent[x];
+    }
+
+    private void union(int[] parent, int a, int b) {
+        int rootA = find(parent, a);
+        int rootB = find(parent, b);
+        if (rootA != rootB) parent[rootA] = rootB;
+    }
+}
