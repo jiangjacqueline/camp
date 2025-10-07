@@ -1,0 +1,105 @@
+Bellman_ford 队列优化算法（又名SPFA）
+题目描述
+
+某国为促进城市间经济交流，决定对货物运输提供补贴。共有 n 个编号为 1 到 n 的城市，通过道路网络连接，网络中的道路仅允许从某个城市单向通行到另一个城市，不能反向通行。
+
+网络中的道路都有各自的运输成本和政府补贴，道路的权值计算方式为：运输成本 - 政府补贴。
+
+权值为正表示扣除了政府补贴后运输货物仍需支付的费用；权值为负则表示政府的补贴超过了支出的运输成本，实际表现为运输过程中还能赚取一定的收益。
+
+请找出从城市 1 到城市 n 的所有可能路径中，综合政府补贴后的最低运输成本。
+
+如果最低运输成本是一个负数，它表示在遵循最优路径的情况下，运输过程中反而能够实现盈利。
+
+城市 1 到城市 n 之间可能会出现没有路径的情况，同时保证道路网络中不存在任何负权回路。
+
+负权回路是指一系列道路的总权值为负，这样的回路使得通过反复经过回路中的道路，理论上可以无限地减少总成本或无限地增加总收益。
+
+输入描述
+
+第一行包含两个正整数，第一个正整数 n 表示该国一共有 n 个城市，第二个整数 m 表示这些城市中共有 m 条道路。
+
+接下来为 m 行，每行包括三个整数，s、t 和 v，表示 s 号城市运输货物到达 t 号城市，道路权值为 v（单向图）。
+
+输出描述
+
+如果能够从城市 1 到连通到城市 n， 请输出一个整数，表示运输成本。如果该整数是负数，则表示实现了盈利。如果从城市 1 没有路径可达城市 n，请输出 "unconnected"。
+
+输入示例：
+
+6 7
+5 6 -2
+1 2 1
+5 3 1
+2 5 2
+2 4 -3
+4 6 4
+1 3 5
+import java.util.*;
+
+public class Main {
+
+    // Define an inner class Edge
+    static class Edge {
+        int from;
+        int to;
+        int val;
+        public Edge(int from, int to, int val) {
+            this.from = from;
+            this.to = to;
+            this.val = val;
+        }
+    }
+
+    public static void main(String[] args) {
+        // Input processing
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        List<List<Edge>> graph = new ArrayList<>();
+
+        for (int i = 0; i <= n; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        for (int i = 0; i < m; i++) {
+            int from = sc.nextInt();
+            int to = sc.nextInt();
+            int val = sc.nextInt();
+            graph.get(from).add(new Edge(from, to, val));
+        }
+
+        // Declare the minDist array to record the minimum distance form current node to the original node
+        int[] minDist = new int[n + 1];
+        Arrays.fill(minDist, Integer.MAX_VALUE);
+        minDist[1] = 0;
+
+        // Declare a queue to store the updated nodes instead of traversing all nodes each loop for more efficiency
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(1);
+
+        // Declare a boolean array to record if the current node is in the queue to optimise the processing
+        boolean[] isInQueue = new boolean[n + 1];
+
+        while (!queue.isEmpty()) {
+            int curNode = queue.poll();
+            isInQueue[curNode] = false; // Represents the current node is not in the queue after being polled
+            for (Edge edge : graph.get(curNode)) {
+                if (minDist[edge.to] > minDist[edge.from] + edge.val) { // Start relaxing the edge
+                    minDist[edge.to] = minDist[edge.from] + edge.val;
+                    if (!isInQueue[edge.to]) { // Don't add the node if it's already in the queue
+                        queue.offer(edge.to);
+                        isInQueue[edge.to] = true;
+                    }
+                }
+            }
+        }
+        
+        // Outcome printing
+        if (minDist[n] == Integer.MAX_VALUE) {
+            System.out.println("unconnected");
+        } else {
+            System.out.println(minDist[n]);
+        }
+    }
+}
